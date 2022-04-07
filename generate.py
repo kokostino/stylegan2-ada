@@ -20,6 +20,17 @@ import dnnlib
 import dnnlib.tflib as tflib
 
 #----------------------------------------------------------------------------
+def usable_latent_thing(dir):
+  dl=np.load(dir)['dlatents']
+  a=dl[0][0]
+  b=np.array([[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a]])
+  return b
+
+def usable_latent_thing_simple(dir):
+  dl=np.load(dir)
+  a=dl[0][0]
+  b=np.array([[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a]])
+  return b
 
 def generate_images(network_pkl, seeds, truncation_psi, outdir, class_idx, dlatents_npz):
     tflib.init_tf()
@@ -32,8 +43,11 @@ def generate_images(network_pkl, seeds, truncation_psi, outdir, class_idx, dlate
     # Render images for a given dlatent vector.
     if dlatents_npz is not None:
         print(f'Generating images from dlatents file "{dlatents_npz}"')
-        dlatents = np.load(dlatents_npz)['dlatents']
-        assert dlatents.shape[1:] == (18, 512) # [N, 18, 512]
+        try:
+          dlatents = usable_latent_thing(dlatents_npz)
+        except:
+          dlatents = usable_latent_thing_simple(dlatents_npz)
+        #assert dlatents.shape[1:] == (18, 512) # [N, 18, 512]
         imgs = Gs.components.synthesis.run(dlatents, output_transform=dict(func=tflib.convert_images_to_uint8, nchw_to_nhwc=True))
         for i, img in enumerate(imgs):
             fname = f'{outdir}/dlatent{i:02d}.png'
