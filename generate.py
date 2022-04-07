@@ -28,9 +28,7 @@ def usable_latent_thing(dir):
 
 def usable_latent_thing_simple(dir):
   dl=np.load(dir)
-  a=dl[0][0]
-  b=np.array([[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a]])
-  return b
+  return dl
 
 def generate_images(network_pkl, seeds, truncation_psi, outdir, class_idx, dlatents_npz):
     tflib.init_tf()
